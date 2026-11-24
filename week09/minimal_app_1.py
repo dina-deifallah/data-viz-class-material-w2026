@@ -14,5 +14,7 @@ df = pd.read_csv('../data/world_happiness_2023.csv')
 df.columns = ['Country','Region','Score','GDP','Social_Support',
               'Life_Expectancy','Freedom','Generosity','Corruption']
 
+st.set_page_config(page_title="World Happiness Report", page_icon="🌐")
+
 st.title("World Happiness Dashboard")
 st.write(f"Data loaded: {len(df)} countries")
