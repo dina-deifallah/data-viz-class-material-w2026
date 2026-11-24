@@ -1,0 +1,524 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "0",
+   "metadata": {},
+   "source": [
+    "# Lecture 9 — Streamlit Foundations\n",
+    "## From Charts to Dashboards\n",
+    "\n",
+    "> **Dataset:** World Happiness Report 2023\n",
+    "\n",
+    "> **Big Book of Dashboards:** Introduction + Chapter 1 — What is a dashboard?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "## Opening: Model Answer Review"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "## Design Principles - Part I: What Is a Dashboard?\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3",
+   "metadata": {
+    "jp-MarkdownHeadingCollapsed": true,
+    "tags": []
+   },
+   "source": [
+    "### 💡 The BBD definition:  A dashboard is a visual display of data used to monitor conditions and/or facilitate understanding.\n",
+    "\n",
+    "### 💡 Two things matter in this definition:\n",
+    "\n",
+    "1. It must be visual — numbers in a table are not a dashboard\n",
+    "2. It must have a purpose — monitoring OR understanding. If you cannot say which of these your dashboard does, you do not yet have a dashboard idea, you have a data collection\n",
+    "\n",
+    "### 💡 Chart vs Dashboard — the key difference\n",
+    "\n",
+    "| | Chart | Dashboard |\n",
+    "|---|---|---|\n",
+    "| Answers | One question | Multiple related questions simultaneously |\n",
+    "| Audience | Anyone | A specific person or role |\n",
+    "| Usage | Once, to make a point | Repeatedly, to monitor over time |\n",
+    "| Filters | None to minimal | User-controlled |\n",
+    "| Success measure | Did the audience understand the message? | Does the audience return to use it? |\n",
+    "\n",
+    "\n",
+    "### 💡 The single-purpose rule\n",
+    "\n",
+    "Before any code, write this sentence:\n",
+    "\n",
+    "> ❌ *'This dashboard shows the World Happiness data.'* (topic, not purpose)\n",
+    "> ✅ *'This dashboard helps a UN policy analyst see which countries lead on happiness and what factors drive the gap.'* (audience + purpose)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "## Design Principles - Part II: BBD Preattentive Attributes + Colour\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5",
+   "metadata": {},
+   "source": [
+    "### 💡 Preattentive attributes\n",
+    "\n",
+    "- BBD (chapter 1) and SWD (chapter 4) say the same thing independently: our brains process certain visual properties in under 250 milliseconds, before conscious attention\n",
+    "- Both books agree: colour, size, and length are the most powerful preattentive attributes. Use them deliberately on every dashboard element\n",
+    "\n",
+    "### 💡 The 4 colour types\n",
+    "\n",
+    "| Type | When to use | Example |\n",
+    "|---|---|---|\n",
+    "| **Sequential** | One direction, ordered data | Sales by state: light→dark blue = low→high |\n",
+    "| **Diverging** | Two directions from a midpoint | Profit: blue (positive) ↔ red (negative), white = zero |\n",
+    "| **Categorical** | Unordered groups | Continent colours on a scatter plot |\n",
+    "| **Highlight** | One thing that needs to stand out | The one bar or line you want the audience to look at first |\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "## Let's Code Some Examples 💻 \n",
+    "\n",
+    "> **HOW TO RUN:** Copy each block into `app.py`, run `streamlit run app.py`.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "7",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import streamlit as st\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "916b27a0-99b0-4dba-b2fc-9e371f0f4e5f",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Country name</th>\n",
+       "      <th>Regional indicator</th>\n",
+       "      <th>Ladder score</th>\n",
+       "      <th>Logged GDP per capita</th>\n",
+       "      <th>Social support</th>\n",
+       "      <th>Healthy life expectancy</th>\n",
+       "      <th>Freedom to make life choices</th>\n",
+       "      <th>Generosity</th>\n",
+       "      <th>Perceptions of corruption</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Finland</td>\n",
+       "      <td>Western Europe</td>\n",
+       "      <td>7.804</td>\n",
+       "      <td>10.775</td>\n",
+       "      <td>0.954</td>\n",
+       "      <td>71.9</td>\n",
+       "      <td>0.949</td>\n",
+       "      <td>0.142</td>\n",
+       "      <td>0.179</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Denmark</td>\n",
+       "      <td>Western Europe</td>\n",
+       "      <td>7.586</td>\n",
+       "      <td>10.933</td>\n",
+       "      <td>0.954</td>\n",
+       "      <td>72.7</td>\n",
+       "      <td>0.931</td>\n",
+       "      <td>0.168</td>\n",
+       "      <td>0.234</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Iceland</td>\n",
+       "      <td>Western Europe</td>\n",
+       "      <td>7.525</td>\n",
+       "      <td>10.878</td>\n",
+       "      <td>0.983</td>\n",
+       "      <td>72.5</td>\n",
+       "      <td>0.961</td>\n",
+       "      <td>0.260</td>\n",
+       "      <td>0.150</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Israel</td>\n",
+       "      <td>Middle East and North Africa</td>\n",
+       "      <td>7.473</td>\n",
+       "      <td>10.527</td>\n",
+       "      <td>0.916</td>\n",
+       "      <td>72.4</td>\n",
+       "      <td>0.903</td>\n",
+       "      <td>0.149</td>\n",
+       "      <td>0.826</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Netherlands</td>\n",
+       "      <td>Western Europe</td>\n",
+       "      <td>7.464</td>\n",
+       "      <td>11.015</td>\n",
+       "      <td>0.939</td>\n",
+       "      <td>72.4</td>\n",
+       "      <td>0.879</td>\n",
+       "      <td>0.240</td>\n",
+       "      <td>0.296</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  Country name            Regional indicator  Ladder score  \\\n",
+       "0      Finland                Western Europe         7.804   \n",
+       "1      Denmark                Western Europe         7.586   \n",
+       "2      Iceland                Western Europe         7.525   \n",
+       "3       Israel  Middle East and North Africa         7.473   \n",
+       "4  Netherlands                Western Europe         7.464   \n",
+       "\n",
+       "   Logged GDP per capita  Social support  Healthy life expectancy  \\\n",
+       "0                 10.775           0.954                     71.9   \n",
+       "1                 10.933           0.954                     72.7   \n",
+       "2                 10.878           0.983                     72.5   \n",
+       "3                 10.527           0.916                     72.4   \n",
+       "4                 11.015           0.939                     72.4   \n",
+       "\n",
+       "   Freedom to make life choices  Generosity  Perceptions of corruption  \n",
+       "0                         0.949       0.142                      0.179  \n",
+       "1                         0.931       0.168                      0.234  \n",
+       "2                         0.961       0.260                      0.150  \n",
+       "3                         0.903       0.149                      0.826  \n",
+       "4                         0.879       0.240                      0.296  "
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.read_csv('../data/world_happiness_2023.csv')\n",
+    "\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "4f23957f-44c2-41b3-a02d-95dfbaebb5e8",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['App', 'Page', '_BottomContainerProxy', '_ContextProxy', '_DeltaGenerator', '_DeltaGeneratorSingleton', '_Dialog', '_ExpanderContainer', '_PopoverContainer', '_QueryParamsProxy', '_STREAMLIT_VERSION_STRING', '_SessionStateProxy', '_StatusContainer', '_TabContainer', '_UserInfoProxy', '__annotations__', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__path__', '__spec__', '__version__', '_bidi_component', '_bottom', '_bottom_dg_internal', '_cache', '_cache_data', '_cache_resource', '_cast', '_column_config', '_config', '_connection', '_deprecate_obj_name', '_dg_singleton', '_dialog_decorator', '_event', '_fragment', '_gather_metrics', '_logger', '_login', '_logout', '_main', '_os', '_secrets_singleton', '_update_logger', 'altair_chart', 'area_chart', 'audio', 'audio_input', 'auth_util', 'badge', 'balloons', 'bar_chart', 'bokeh_chart', 'bottom', 'button', 'cache', 'cache_data', 'cache_resource', 'camera_input', 'caption', 'chat_input', 'chat_message', 'checkbox', 'cli_util', 'code', 'color_picker', 'column_config', 'columns', 'commands', 'components', 'config', 'config_option', 'config_util', 'connection', 'connections', 'container', 'context', 'cursor', 'data_editor', 'dataframe', 'dataframe_util', 'date_input', 'datetime_input', 'delta_generator', 'delta_generator_singletons', 'deprecation_util', 'development', 'dialog', 'divider', 'download_button', 'echo', 'elements', 'empty', 'env_util', 'error', 'error_util', 'errors', 'exception', 'expander', 'feedback', 'file_uploader', 'file_util', 'form', 'form_submit_button', 'fragment', 'get_option', 'graphviz_chart', 'header', 'help', 'html', 'iframe', 'image', 'info', 'json', 'latex', 'line_chart', 'link_button', 'logger', 'login', 'logo', 'logout', 'map', 'markdown', 'menu_button', 'metric', 'multiselect', 'navigation', 'net_util', 'number_input', 'page_link', 'pagination', 'path_security', 'pdf', 'pills', 'plotly_chart', 'popover', 'progress', 'proto', 'pydeck_chart', 'pyplot', 'query_params', 'radio', 'rerun', 'runtime', 'scatter_chart', 'secrets', 'segmented_control', 'select_slider', 'selectbox', 'session_state', 'set_option', 'set_page_config', 'sidebar', 'slider', 'snow', 'source_util', 'space', 'spinner', 'starlette', 'status', 'stop', 'streamlit', 'string_util', 'subheader', 'success', 'switch_page', 'table', 'tabs', 'text', 'text_area', 'text_input', 'time_input', 'time_util', 'title', 'toast', 'toggle', 'type_util', 'url_util', 'user', 'user_info', 'util', 'vega_lite_chart', 'version', 'video', 'warning', 'watcher', 'web', 'write', 'write_stream']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(dir(st))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# ── STEP 1: Minimal working app ──────────────────────────────────────────\n",
+    "import streamlit as st\n",
+    "import pandas as pd\n",
+    "import plotly.express as px\n",
+    "\n",
+    "df = pd.read_csv('../data/world_happiness_2023.csv')\n",
+    "df.columns = ['Country','Region','Score','GDP','Social_Support',\n",
+    "              'Life_Expectancy','Freedom','Generosity','Corruption']\n",
+    "\n",
+    "st.title(\"World Happiness Dashboard\")\n",
+    "st.write(f\"Data loaded: {len(df)} countries\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# ── STEP 2: Add a chart + apply appropriate colour rule ───────────────────────────\n",
+    "import streamlit as st\n",
+    "import pandas as pd\n",
+    "import plotly.express as px\n",
+    "\n",
+    "df = pd.read_csv('../data/world_happiness_2023.csv')\n",
+    "df.columns = ['Country','Region','Score','GDP','Social_Support',\n",
+    "              'Life_Expectancy','Freedom','Generosity','Corruption']\n",
+    "\n",
+    "st.title(\"World Happiness Dashboard\")\n",
+    "\n",
+    "top15 = df.nlargest(15, 'Score').sort_values('Score')\n",
+    "\n",
+    "# The bars are ordered, not categorical — sequential blue (light→dark) is appropriate\n",
+    "fig = px.bar(top15, x='Score', y='Country', orientation='h',\n",
+    "             color='Score',\n",
+    "             color_continuous_scale='Blues',  \n",
+    "             range_color=[5.0, 8.5],\n",
+    "             labels={'Score': 'Happiness Score (0–10)', 'Country': ''})\n",
+    "fig.update_layout(plot_bgcolor='white', paper_bgcolor='white',\n",
+    "                  font=dict(family='Arial', size=12),\n",
+    "                  xaxis=dict(range=[0, 8.5]),  \n",
+    "                  coloraxis_showscale=False,\n",
+    "                  margin=dict(l=10,r=20,t=10,b=10))\n",
+    "fig.update_traces(marker_line_width=0)\n",
+    "fig.show()\n",
+    "st.plotly_chart(fig, width='stretch')  # always use this\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "10",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# ── STEP 3: Sidebar filter + reactive chart ──────────────────────────────\n",
+    "import streamlit as st\n",
+    "import pandas as pd\n",
+    "import plotly.express as px\n",
+    "\n",
+    "df = pd.read_csv('../data/world_happiness_2023.csv')\n",
+    "df.columns = ['Country','Region','Score','GDP','Social_Support',\n",
+    "              'Life_Expectancy','Freedom','Generosity','Corruption']\n",
+    "\n",
+    "st.title(\"World Happiness Dashboard\")\n",
+    "\n",
+    "with st.sidebar:\n",
+    "    st.header(\"Filters\")\n",
+    "    regions = ['All'] + sorted(df['Region'].unique().tolist())\n",
+    "    selected_region = st.selectbox(\"Region\", regions)\n",
+    "    top_n = st.slider(\"Show top N countries\", 5, 25, 15)\n",
+    "\n",
+    "filtered = df if selected_region == 'All' else df[df['Region'] == selected_region]\n",
+    "top = filtered.nlargest(top_n, 'Score').sort_values('Score')\n",
+    "\n",
+    "fig = px.bar(top, x='Score', y='Country', orientation='h',\n",
+    "             color_discrete_sequence=['#2E75B6'],  \n",
+    "             labels={'Score': 'Happiness Score (0–10)', 'Country': ''})\n",
+    "\n",
+    "fig.update_layout(plot_bgcolor='white', paper_bgcolor='white',\n",
+    "                  xaxis=dict(range=[0,8.5], gridcolor='#EEEEEE'),\n",
+    "                  yaxis=dict(showgrid=False),\n",
+    "                  font=dict(family='Arial', size=12),\n",
+    "                  margin=dict(l=10,r=20,t=10,b=10))\n",
+    "\n",
+    "fig.update_traces(marker_line_width=0)\n",
+    "\n",
+    "st.plotly_chart(fig, width='stretch')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "11",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# ── STEP 4: Full dashboard — KPIs + columns layout + BBD colour ──────────\n",
+    "import streamlit as st\n",
+    "import pandas as pd\n",
+    "import plotly.express as px\n",
+    "\n",
+    "st.set_page_config(page_title=\"World Happiness\", page_icon=\"🌍\", layout=\"wide\")\n",
+    "\n",
+    "df = pd.read_csv('../data/world_happiness_2023.csv')\n",
+    "df.columns = ['Country','Region','Score','GDP','Social_Support',\n",
+    "              'Life_Expectancy','Freedom','Generosity','Corruption']\n",
+    "\n",
+    "with st.sidebar:\n",
+    "    st.header(\"Filters\")\n",
+    "    regions = ['All'] + sorted(df['Region'].unique().tolist())\n",
+    "    selected_region = st.selectbox(\"Region\", regions)\n",
+    "    top_n = st.slider(\"Show top N\", 5, 25, 15)\n",
+    "\n",
+    "filtered = df if selected_region == 'All' else df[df['Region'] == selected_region]\n",
+    "\n",
+    "st.title(\"🌍 World Happiness Dashboard\")\n",
+    "st.caption(\"Source: World Happiness Report 2023 | Kaggle\")\n",
+    "\n",
+    "# KPI row — BBD: big numbers at the top, readable in 5 seconds\n",
+    "col1, col2, col3 = st.columns(3)\n",
+    "col1.metric(\"Countries\", len(filtered))\n",
+    "col2.metric(\"Avg Score\", f\"{filtered['Score'].mean():.2f}\",\n",
+    "            f\"{filtered['Score'].mean()-df['Score'].mean():+.2f} vs global\")\n",
+    "col3.metric(\"Happiest\", filtered.nlargest(1,'Score')['Country'].values[0])\n",
+    "\n",
+    "st.divider()\n",
+    "\n",
+    "# Two-column layout\n",
+    "col_left, col_right = st.columns(2)\n",
+    "\n",
+    "with col_left:\n",
+    "    st.subheader(\"Rankings\")\n",
+    "    top = filtered.nlargest(top_n, 'Score').sort_values('Score')\n",
+    "    \n",
+    "    fig1 = px.bar(top, x='Score', y='Country', orientation='h',\n",
+    "                  color_discrete_sequence=['#2E75B6'],\n",
+    "                  labels={'Score':'Score (0–10)','Country':''})\n",
+    "    \n",
+    "    fig1.update_layout(plot_bgcolor='white', paper_bgcolor='white',\n",
+    "                       xaxis=dict(range=[0,8.5]), font=dict(family='Arial',size=12),\n",
+    "                       margin=dict(l=10,r=10,t=5,b=10))\n",
+    "    fig1.update_traces(marker_line_width=0)\n",
+    "    st.plotly_chart(fig1, width='stretch')\n",
+    "\n",
+    "with col_right:\n",
+    "    st.subheader(\"Score vs GDP\")\n",
+    "    fig2 = px.scatter(filtered, x='GDP', y='Score', hover_name='Country',\n",
+    "                      # BBD categorical colour: continent = unordered group\n",
+    "                      color_discrete_sequence=['#E63946'])\n",
+    "    fig2.update_layout(plot_bgcolor='white', paper_bgcolor='white',\n",
+    "                       font=dict(family='Arial',size=12),\n",
+    "                       margin=dict(l=10,r=10,t=5,b=10))\n",
+    "    st.plotly_chart(fig2, width='stretch')\n",
+    "\n",
+    "st.divider()\n",
+    "st.caption(\"Built with Streamlit + Plotly\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1f2fee5e-2236-4439-b6af-80204d46eb55",
+   "metadata": {},
+   "source": [
+    "---\n",
+    "## Class Exercise 💪 💻"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "647364ab-d223-494b-93ed-6e78a06122d0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# ── STEP 6: Add a third chart of your choice using a DIVERGING colour scale ───────────────────────────\n",
+    "# something where values go above and below a meaningful midpoint\n",
+    "# Label the midpoint in an annotation."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ab03c823-dbeb-4227-a553-68e15a6f15bd",
+   "metadata": {
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# ── STEP 6: Deploy to Streamlit Community Cloud ───────────────────────────\n",
+    "# 1. Save as app.py in your GitHub repo\n",
+    "# 2. Create requirements.txt:\n",
+    "#       streamlit\n",
+    "#       plotly\n",
+    "#       pandas\n",
+    "# 3. share.streamlit.io → New app → point to repo/app.py\n",
+    "# 4. Done — public URL in ~2 minutes\n",
+    "\n",
+    "# For data: either commit to repo, or load from raw GitHub URL:\n",
+    "# df = pd.read_csv('https://raw.githubusercontent.com/USER/REPO/main/data/file.csv')\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "fdbe61b1-6ba6-4815-bb0a-74e1761e027c",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
