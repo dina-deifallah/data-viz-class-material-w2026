@@ -45,13 +45,15 @@ st.divider()
 # create top bar chart
 fig = px.bar(top, x='Score', y='Country', orientation='h',
              labels={'Score': 'Happiness Score (0–10)', 'Country': ''},
-             template='plotly_white', title=f'Happiest {top_n} Countries in 2023 - {selected_region}')
+             template='plotly_white', 
+             title=f'Happiest {len(filtered)} Countries in 2023 - {selected_region}',
+             height=600)
 
 fig.update_layout(title_font=dict(family='Arial', size=13, color='slategrey'),
                   xaxis=dict(range=[0, 8.0]))
 
 
-st.plotly_chart(fig, width='stretch', height=600) 
+st.plotly_chart(fig, width='stretch') 
 
 st.divider()
 st.caption("Built with Streamlit + Plotly")

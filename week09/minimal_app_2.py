@@ -24,7 +24,9 @@ st.write(f"Data loaded: {len(df)} countries")
 top15 = df.nlargest(15, 'Score').sort_values('Score')
 fig = px.bar(top15, x='Score', y='Country', orientation='h',
              labels={'Score': 'Happiness Score (0–10)', 'Country': ''},
-             template='plotly_white', title="Happiest 15 Countries in 2023")
+             template='plotly_white', 
+             title="Happiest 15 Countries in 2023",
+             height=700, width=1000)
 
 fig.update_layout(title_font=dict(family='Arial', size=13, color='slategrey'),
                   xaxis=dict(range=[0, 8.0]))
