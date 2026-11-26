@@ -58,5 +58,9 @@ fig.update_layout(title_font=dict(family='Arial', size=13, color='slategrey'),
 
 st.plotly_chart(fig, width='stretch') 
 
+
+if st.button("Send balloons!"):
+    st.balloons()
+
 st.divider()
 st.caption("Built with Streamlit + Plotly")

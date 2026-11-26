@@ -18,5 +18,6 @@ st.set_page_config(page_title="World Happiness Report", page_icon="🌐")
 
 st.title("World Happiness Dashboard")
 st.write(f"Data loaded: {len(df)} countries")
+
 if st.button("Send balloons!"):
     st.balloons()

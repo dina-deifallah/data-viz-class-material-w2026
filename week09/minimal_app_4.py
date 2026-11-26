@@ -33,6 +33,8 @@ with st.sidebar:
 filtered = df if selected_region == 'All Regions' else df[df['Region'] == selected_region]
 top = filtered.nlargest(top_n, 'Score').sort_values('Score')
 
+
+
 # KPI row 
 col1, col2, col3 = st.columns(3)
 col1.metric("Countries", len(filtered))
